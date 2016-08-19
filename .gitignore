@@ -1,0 +1,7 @@
+*.pyc
+python_openam.egg-info
+.idea
+.cache/
+.coverage
+docs/results.xml
+run-me.py
