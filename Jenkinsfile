@@ -7,13 +7,13 @@ node() {
         stage 'Checkout'
             checkout scm
 
-        stage 'Run OpenAM 12'
+        stage 'Validate on OpenAM 12'
             sh 'bash scripts/start_docker.sh 12.0.0'
             sh 'python setup.py test'
 
         stop_docker()
 
-        stage 'Run OpenAM 13'
+        stage 'Validate on OpenAM 13'
             sh 'bash scripts/start_docker.sh 13.0.0'
             sh 'python setup.py test'
 

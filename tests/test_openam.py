@@ -148,9 +148,9 @@ def test_session_information():
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
     auth_data = am.authenticate(username="amadmin", password="password_openam")
-    data = am.session_information(action="getMaxTime", token=auth_data['tokenId'])
+    data = am.session_information(action="isActive", token=auth_data['tokenId'])
     am.logout()
-    assert data['maxtime'] == 7200
+    assert data['active']
 
 
 def test_session_information_wrong_action():
