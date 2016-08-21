@@ -11,7 +11,7 @@ import openam
 
 
 def test___init__openam_url():
-    """ Will test __init__ function if syncope_url is provided.
+    """Test __init__ function if openam_url is provided.
     :return:
     """
     with pytest.raises(ValueError) as excinfo:
@@ -20,7 +20,7 @@ def test___init__openam_url():
 
 
 def test_authenticate():
-    """
+    """Test the authentication function.
     :return:
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -30,7 +30,7 @@ def test_authenticate():
 
 
 def test_authenticate_wrong_realm():
-    """
+    """Test the authentication function with a wrong realm.
     :return:
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -40,7 +40,7 @@ def test_authenticate_wrong_realm():
 
 
 def test_authenticate_wrong_password():
-    """
+    """Test the authentication function with a wrong password.
     :return:
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -50,7 +50,7 @@ def test_authenticate_wrong_password():
 
 
 def test_authenticate_no_username():
-    """ Will test __init__ function if syncope_url is provided.
+    """ Will test authenticate function if no username is provided.
     :return:
     """
     with pytest.raises(ValueError) as excinfo:
@@ -60,7 +60,7 @@ def test_authenticate_no_username():
 
 
 def test_authenticate_no_password():
-    """ Will test __init__ function if syncope_url is provided.
+    """ Will test authenticate function if no password is provided.
     :return:
     """
     with pytest.raises(ValueError) as excinfo:
@@ -70,7 +70,7 @@ def test_authenticate_no_password():
 
 
 def test_logout():
-    """
+    """Test if a user can logout.
     :return:
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -79,7 +79,7 @@ def test_logout():
 
 
 def test_logout_realm_wrong():
-    """
+    """Test if a user can logout with a wrong realm.
     :return:
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -88,7 +88,7 @@ def test_logout_realm_wrong():
 
 
 def test_get_serverinfo():
-    """
+    """Test to get all server information.
     :return:
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -99,7 +99,7 @@ def test_get_serverinfo():
 
 
 def test_get_serverinfo_with_property():
-    """
+    """Test to get the cookieDomains configuration.
     :return:
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -110,7 +110,7 @@ def test_get_serverinfo_with_property():
 
 
 def test_get_serverinfo_with_wrong_property():
-    """
+    """Test with a wrong property to get server information.
     :return:
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -121,7 +121,7 @@ def test_get_serverinfo_with_wrong_property():
 
 
 def test_token_validation():
-    """
+    """Test if a token is validated.
     :return:
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -132,7 +132,7 @@ def test_token_validation():
 
 
 def test_token_validation_wrong():
-    """
+    """Test a wrong token to validate.
     :return:
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -143,7 +143,7 @@ def test_token_validation_wrong():
 
 
 def test_session_information():
-    """
+    """Validate if a token is Active.
     :return:
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -154,7 +154,7 @@ def test_session_information():
 
 
 def test_session_information_wrong_action():
-    """
+    """Get the session information with a wrong action.
     :return:
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -165,7 +165,7 @@ def test_session_information_wrong_action():
 
 
 def test_session_information_no_action():
-    """ Will test __init__ function if syncope_url is provided.
+    """ Will test session_information function if no action is provided.
     :return:
     """
     with pytest.raises(ValueError) as excinfo:
@@ -176,7 +176,7 @@ def test_session_information_no_action():
 
 
 def test_session_information_no_token():
-    """ Will test __init__ function if syncope_url is provided.
+    """ Will test session_information function if no token is provided.
     :return:
     """
     with pytest.raises(ValueError) as excinfo:

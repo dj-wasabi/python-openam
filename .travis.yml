@@ -10,11 +10,14 @@ before_install:
 - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
 
 install:
-- pip install pep8 pep257
+- pip install pep8 pep257 coverage
 
-script:
+before_script:
 - pep8 openam --ignore=E501
 - pep257 openam
+- coverage report -m --fail-under=85
+
+script:
 - bash scripts/start_docker.sh 12.0.0
 - python setup.py test
 - bash scripts/stop_docker.sh

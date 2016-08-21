@@ -8,11 +8,12 @@ node() {
             checkout scm
 
         stage 'Install dependencies'
-            sh 'sudo pip install pep8 pep257'
+            sh 'sudo pip install pep8 pep257 coverage'
 
         stage 'pep checks'
             sh 'pep8 openam --ignore=E501'
             sh 'pep257 openam'
+            sh 'coverage report -m --fail-under=85'
 
         stage 'Validate on OpenAM 12'
             sh 'bash scripts/start_docker.sh 12.0.0'

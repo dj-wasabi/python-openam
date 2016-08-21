@@ -3,6 +3,12 @@ Tests
 
 This module contains some tests. These tests will validate the correct usage of this module.
 
+Coverage
+********
+
+Coverage tool is installed and checks what the coverage is of the tests against the code.
+The test fails when the coverage is below 85%.
+
 pep
 ***
 
@@ -15,11 +21,12 @@ At the moment, there are 2 pep validation tests:
 pep8
 ====
 
-pep8 Is for validating the python style guide.
+pep8 Is for validating the python style guide. First test is validating if the module complies with this standard. There is one exception, this is test 'E501' (Line to long).
+Unless there is a very good argument to validate on this, it will be disabled for now. With the current monitor resolutions there is no need for testing on this.
 
 pep257
 ======
-Pep257 is used for docstrings
+Pep257 is used for validating the docstrings.
 
 
 PyTest
