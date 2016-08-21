@@ -8,7 +8,7 @@ node() {
             checkout scm
 
         stage 'Install dependencies'
-            sh 'pip install pep8 pep257'
+            sh 'sudo pip install pep8 pep257'
 
         stage 'pep checks'
             sh 'pep8 openam --ignore=E501'
