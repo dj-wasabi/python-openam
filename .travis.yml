@@ -17,7 +17,6 @@ install:
 - pip install pep8 pep257 coverage
 
 before_script:
-- coverage report -m --fail-under=85
 - pep8 openam --ignore=E501
 - pep257 openam
 
