@@ -7,6 +7,13 @@ node() {
         stage 'Checkout'
             checkout scm
 
+        stage 'Install dependencies'
+            sh 'pip install pep8 pep257'
+
+        stage 'pep checks'
+            sh 'pep8 openam --ignore=E501'
+            sh 'pep257 openam'
+
         stage 'Validate on OpenAM 12'
             sh 'bash scripts/start_docker.sh 12.0.0'
             sh 'python setup.py test'

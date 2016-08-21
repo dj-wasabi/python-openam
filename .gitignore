@@ -4,4 +4,6 @@ python_openam.egg-info
 .cache/
 .coverage
 docs/results.xml
+docs/build/html/
 run-me.py
+
