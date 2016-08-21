@@ -39,4 +39,4 @@ This python module should work with the following versions of OpenAM:
 * 12.0.0
 * 13.0.0
 
-Tests will validate on these version.
+Tests will validate that the module works on these versions.
