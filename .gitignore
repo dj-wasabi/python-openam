@@ -2,6 +2,7 @@
 python_openam.egg-info
 .idea
 .cache/
+dist/
 .coverage
 docs/results.xml
 docs/build/html/

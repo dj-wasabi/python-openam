@@ -3,6 +3,8 @@ Introduction
 
 This module is a python wrapper for the OpenAM API. With this module you can easy make use of the OpenAM API.
 
+Github page: https://github.com/dj-wasabi/python-openam
+
 
 
 Installation
@@ -14,7 +16,7 @@ Installation is very simple, execute the following command:
 
     pip install python-openam
 
-Module is installed.
+Module is installed and can be used.
 
 Example usage
 *************

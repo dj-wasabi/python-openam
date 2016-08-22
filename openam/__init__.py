@@ -15,11 +15,11 @@ class Openam(object):
         """Will initialize the openam module.
 
         :param openam_url: The complete URL to the OpenAM server.
-        :type openam_url: String
+        :type openam_url: str
         :param resource: The username to login.
-        :type resource: String
+        :type resource: str
         :param protocol: The password for the user configured in username.
-        :type protocol: String
+        :type protocol: str
         :param timeout: HTTP requests timeout in seconds.
         :type timeout: int
         :param cookiename: The name of the cookie.
@@ -41,7 +41,7 @@ class Openam(object):
         """Will do an 'GET' request to get information.
 
         :param uri: The uri you want to get.
-        :type uri: String
+        :type uri: str
         :param headers: The http headers that are needed for the request.
         :type headers: dict
         :return: A dict with information that is retrieved from OpenAM
@@ -57,7 +57,7 @@ class Openam(object):
         """Post information to the API.
 
         :param uri: The uri that is used for posting the data.
-        :type uri: String
+        :type uri: str
         :param data: The data that is posted to the API.
         :type data: dict
         :param headers: The http headers that are needed for the request.
@@ -80,11 +80,11 @@ class Openam(object):
         """Will authenticate the configured user on OpenAM. When successful, a http header is added to the current headers with the the value of the 'cookiename' (Default is set to 'iplanetDirectoryPro') name and has the value from the retrieved tokenId.
 
         :param realm: The name of the realm on which the user needs to auhtenticate on. (Optional, when realms are used.)
-        :type realm: String
+        :type realm: str
         :param username: The username which is used to authenticate against OpenAM.
-        :type username: String
+        :type username: str
         :param password: The password for the user configured on 'username'
-        :type password: String
+        :type password: str
         :rtype: dict
         :return: A dict with the keys 'succesUrl' and 'tokenId'.
 
@@ -125,8 +125,8 @@ class Openam(object):
         """Will logout the current user from OpenAM.
 
         :param realm: The name of the realm.
-        :type realm: String
-        :rtype: Boolean
+        :type realm: str
+        :rtype: bool
         :return: True if logout was successful, False when won't.
         :Example:
             >>> import openam
@@ -150,7 +150,7 @@ class Openam(object):
         """Get all - or when provided with the property - server related information.
 
         :param property: The type of information needed. When none is provided, all available configuration is returned (*).
-        :type property: String
+        :type property: str
         :rtype: dict
         :return: Server specific information from OpenAM.
         :Example:
@@ -175,9 +175,9 @@ class Openam(object):
         """Validate if the session is active.
 
         :param realm: The name of the realm.
-        :type realm: String
+        :type realm: str
         :param token: The token id.
-        :type token: String
+        :type token: str
         :rtype: dict
         :return: Information if token is active or not.
         :Example:
@@ -203,9 +203,9 @@ class Openam(object):
         """Will give information about the provided session.
 
         :param action:
-        :type action: String
+        :type action: str
         :param token: The token id.
-        :type token: String
+        :type token: str
         :rtype: dict
         :return: Information
         :Example:
