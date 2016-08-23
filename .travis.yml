@@ -21,12 +21,8 @@ before_script:
 - pep257 openam
 
 script:
-- bash scripts/start_docker.sh 12.0.0
-- sleep 5
-- python setup.py test || echo "ignoring_test"
-- python setup.py test
-- bash scripts/stop_docker.sh
 - bash scripts/start_docker.sh 13.0.0
 - sleep 5
+- python setup.py test || echo "ignoring_first_test"
 - python setup.py test
 - bash scripts/stop_docker.sh

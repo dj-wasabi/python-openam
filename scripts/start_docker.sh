@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-TAG=$1
+TAG=${1:-13.0.0}
 
 # Start docker OpenAM ${TAG}
 docker pull wdijkerman/openam:${TAG}
