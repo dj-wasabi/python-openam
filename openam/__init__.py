@@ -73,7 +73,7 @@ class Openam(object):
         try:
             data = requests.post(openam_path, headers=headers, data=data, timeout=self.timeout)
         except requests.exceptions.RequestException as e:
-            data = e
+            data = {'error': e}
         return data
 
     def _put(self, uri, data=None, headers=None):
@@ -96,7 +96,7 @@ class Openam(object):
         try:
             data = requests.put(openam_path, headers=headers, data=data, timeout=self.timeout)
         except requests.exceptions.RequestException as e:
-            data = e
+            data = {'error': e}
         return data
 
     def _delete(self, uri, headers=None):
@@ -117,8 +117,37 @@ class Openam(object):
         try:
             data = requests.delete(openam_path, headers=headers, timeout=self.timeout)
         except requests.exceptions.RequestException as e:
-            data = e
+            data = {'error': e}
         return data
+
+    def _uri_realm_creator(self, realm=None, uri=None):
+        """Creating the uri if there is a realm provided.
+
+        :param realm: The name of the realm
+        :type realm: str
+        :param uri: The uri after the 'realm' part.
+        :type uri: str
+        :rtype: str
+        :return:
+        """
+        if realm is not None:
+            uri = 'json/' + realm + '/' + uri
+        else:
+            uri = 'json/' + uri
+
+        return uri
+
+    def _type_validator(self, type=None):
+        """Validating if a type is set to one of the 3 possibilities. If not, 'users' will be used as type.
+
+        :param type: The name of the type
+        :type type: str
+        :rtype: str
+        :return: The type
+        """
+        if type not in ['agents', 'users', 'groups']:
+            type = 'users'
+        return type
 
     def authenticate(self, realm=None, username=None, password=None):
         """Will authenticate the configured user on OpenAM. When successful, a http header is added to the current headers with the the value of the 'cookiename' (Default is set to 'iplanetDirectoryPro') name and has the value from the retrieved tokenId.
@@ -151,11 +180,7 @@ class Openam(object):
         cookiename = self.cookiename
         headers['X-OpenAM-Username'] = username
         headers['X-OpenAM-Password'] = password
-
-        if realm is not None:
-            uri = 'json/' + realm + '/authenticate'
-        else:
-            uri = 'json/authenticate'
+        uri = self._uri_realm_creator(realm=realm, uri="authenticate")
 
         data = self._post(uri=uri, data=post_data, headers=headers)
         if data.status_code == 200:
@@ -179,11 +204,7 @@ class Openam(object):
             >>> am.logout()
             True
         """
-        if realm is not None:
-            uri = 'json/' + realm + '/sessions/?_action=logout'
-        else:
-            uri = 'json/sessions/?_action=logout'
-
+        uri = self._uri_realm_creator(realm=realm, uri="sessions/?_action=logout")
         data = self._post(uri=uri, headers=self.headers)
         if data.status_code == 200:
             return True
@@ -232,11 +253,8 @@ class Openam(object):
             {u'valid': True, u'realm': u'/', u'uid': u'amadmin'}
             >>> am.logout()
         """
-        if realm is not None:
-            uri = 'json/' + realm + '/sessions/' + token + '?_action=validate'
-        else:
-            uri = 'json/sessions/' + token + '?_action=validate'
-
+        token_url = 'sessions/' + token + '?_action=validate'
+        uri = self._uri_realm_creator(realm=realm, uri=token_url)
         data = self._post(uri=uri, data={}, headers=self.headers)
         if data.status_code == 200:
             return data.json()
@@ -273,7 +291,7 @@ class Openam(object):
             return False
 
     def create_identity(self, realm=None, type="users", user_data=None):
-        """Create an identity. This can be one of the following.
+        """Create an identity. This can be one of the following types.
 
         * users
         * agents
@@ -287,14 +305,14 @@ class Openam(object):
         :param type: The type of identity you want to create.
         :type type: str
         :param user_data: All necessary information needed to create an identity.
-        :type user_data: str
+        :type user_data: dict
         :rtype: json
         :return:
         :Example:
             >>> import openam
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
             >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
-            >>> user_data = '{"username": "bjensen", "userpassword": "secret12", "mail": "bjensen@example.com"}'
+            >>> user_data = {"username": "bjensen", "userpassword": "secret12", "mail": "bjensen@example.com"}
             >>> am.create_identity(user=user_data)
             {u'username': u'bjensen', u'dn': [u'uid=bjensen,ou=people,dc=openam,dc=forgerock,dc=org'], u'realm': u'/'..}
             >>> am.create_identity(user=user_data)
@@ -304,19 +322,14 @@ class Openam(object):
         if not user_data:
             raise ValueError("Please provide correct user information.")
 
-        if type not in ['agents', 'users', 'groups']:
-            type = 'users'
-
-        if realm is not None:
-            uri = 'json/' + realm + '/' + type + '/?_action=create'
-        else:
-            uri = 'json/' + type + '/?_action=create'
-
+        user_data = str(json.dumps(user_data))
+        type = self._type_validator(type=type)
+        uri = self._uri_realm_creator(realm=realm, uri=type + '/?_action=create')
         data = self._post(uri=uri, data=user_data, headers=self.headers)
         return data.json()
 
     def list_identities(self, realm=None, type="users", query=None):
-        """List or search an identity. This can be one of the following.
+        """List or search an identity. This can be one of the following types.
 
         * users
         * agents
@@ -338,22 +351,16 @@ class Openam(object):
             {u'totalPagedResultsPolicy': u'NONE', u'pagedResultsCookie': None, u'totalPagedResults': -1, u'result': [{u'username': u'demo', u'dn' ...
             >>> am.logout()
         """
-        if type not in ['agents', 'users', 'groups']:
-            type = 'users'
-
         if query is None:
             query = '*'
 
-        if realm is not None:
-            uri = 'json/' + realm + '/' + type + '/?_queryID=' + query
-        else:
-            uri = 'json/' + type + '/?_queryID=' + query
-
+        type = self._type_validator(type=type)
+        uri = self._uri_realm_creator(realm=realm, uri=type + '/?_queryID=' + query)
         data = self._get(uri=uri, headers=self.headers)
         return data.json()
 
     def get_identity(self, realm=None, type="users", username=None, fields=None):
-        """Get an identity. This can be one of the following.
+        """Get an identity. This can be one of the following types.
 
         * users
         * agents
@@ -380,14 +387,8 @@ class Openam(object):
         if not username:
             raise ValueError("Please provide a username.")
 
-        if type not in ['agents', 'users', 'groups']:
-            type = 'users'
-
-        if realm is not None:
-            uri = 'json/' + realm + '/' + type + '/' + username
-        else:
-            uri = 'json/' + type + '/' + username
-
+        type = self._type_validator(type=type)
+        uri = self._uri_realm_creator(realm=realm, uri=type + '/' + username)
         if fields is not None:
             uri = uri + '?_fields=' + fields
 
@@ -398,7 +399,7 @@ class Openam(object):
             return False
 
     def update_identity(self, realm=None, type="users", username=None, user_data=None):
-        """Update an identity. This can be one of the following.
+        """Update an identity. This can be one of the following types.
 
         * users
         * agents
@@ -410,15 +411,15 @@ class Openam(object):
         :type type: str
         :param username: The username/agentname/groupname that needs to be updated.
         :type username: str
-        :param user_data: The fields you want to retrieve. When None are given, all information is returned.
-        :type user_data: str
+        :param user_data: The information you want to update.
+        :type user_data: dict
         :rtype: json
         :return: Json information.
         :Example:
             >>> import openam
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
             >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
-            >>> user_data = '{ "mail": "demo@example.com" }'
+            >>> user_data = { "mail": "demo@example.com" }
             >>> am.update_identity(username="demo", user_data=user_data)
             {u'username': u'demo', u'dn': [u'uid=demo,ou=people,dc=openam,dc=forgerock,dc=org'], u'realm': u'/',  ...
             >>> am.logout()
@@ -429,19 +430,14 @@ class Openam(object):
         if not user_data:
             raise ValueError("Please provide correct user information.")
 
-        if type not in ['agents', 'users', 'groups']:
-            type = 'users'
-
-        if realm is not None:
-            uri = 'json/' + realm + '/' + type + '/' + username
-        else:
-            uri = 'json/' + type + '/' + username
-
+        user_data = str(json.dumps(user_data))
+        type = self._type_validator(type=type)
+        uri = self._uri_realm_creator(realm=realm, uri=type + '/' + username)
         data = self._put(uri=uri, data=user_data, headers=self.headers)
         return data.json()
 
     def delete_identity(self, realm=None, type="users", username=None):
-        """Delete an identity. This can be one of the following.
+        """Delete an identity. This can be one of the following types.
 
         * users
         * agents
@@ -466,13 +462,7 @@ class Openam(object):
         if not username:
             raise ValueError("Please provide a username.")
 
-        if type not in ['agents', 'users', 'groups']:
-            type = 'users'
-
-        if realm is not None:
-            uri = 'json/' + realm + '/' + type + '/' + username
-        else:
-            uri = 'json/' + type + '/' + username
-
+        type = self._type_validator(type=type)
+        uri = self._uri_realm_creator(realm=realm, uri=type + '/' + username)
         data = self._delete(uri=uri, headers=self.headers)
         return data.json()
