@@ -535,6 +535,7 @@ def test_delete_identity_no_username():
         am.authenticate(username="amadmin", password="password_openam")
         am.delete_identity()
     assert excinfo.value.message == 'Please provide a username.'
+<<<<<<< HEAD
 
 
 def test_create_realm():
@@ -672,3 +673,5 @@ def test_delete_realm_no_realm():
         am.authenticate(username="amadmin", password="password_openam")
         am.delete_realm()
     assert excinfo.value.message == 'Please provide a realm.'
+=======
+>>>>>>> master
