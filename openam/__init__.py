@@ -273,7 +273,7 @@ class Openam(object):
             return False
 
     def create_identity(self, realm=None, type="users", user_data=None):
-        """Create an identity. This can be one of the following:
+        """Create an identity. This can be one of the following.
 
         * users
         * agents
@@ -316,7 +316,7 @@ class Openam(object):
         return data.json()
 
     def list_identities(self, realm=None, type="users", query=None):
-        """List or search an identity. This can be one of the following:
+        """List or search an identity. This can be one of the following.
 
         * users
         * agents
@@ -353,7 +353,7 @@ class Openam(object):
         return data.json()
 
     def get_identity(self, realm=None, type="users", username=None, fields=None):
-        """Get an identity. This can be one of the following:
+        """Get an identity. This can be one of the following.
 
         * users
         * agents
@@ -398,7 +398,7 @@ class Openam(object):
             return False
 
     def update_identity(self, realm=None, type="users", username=None, user_data=None):
-        """Update an identity. This can be one of the following:
+        """Update an identity. This can be one of the following.
 
         * users
         * agents
@@ -441,7 +441,7 @@ class Openam(object):
         return data.json()
 
     def delete_identity(self, realm=None, type="users", username=None):
-        """Delete an identity. This can be one of the following:
+        """Delete an identity. This can be one of the following.
 
         * users
         * agents
