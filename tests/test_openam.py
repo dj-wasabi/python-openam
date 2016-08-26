@@ -464,6 +464,56 @@ def test_update_identity_no_user_data():
     assert excinfo.value.message == 'Please provide correct user information.'
 
 
+def test_change_password():
+    """Will change a password.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+    am.authenticate(username="amadmin", password="password_openam")
+    user_data = {"currentpassword": "secret12", "userpassword": "secret13"}
+    data = am.change_password(username="bjensen", user_data=user_data)
+    am.logout()
+
+    assert data
+
+
+def test_change_password_false():
+    """Will change a password where new and old are same.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+    am.authenticate(username="amadmin", password="password_openam")
+    user_data = {"currentpassword": "secret12", "userpassword": "secret12"}
+    data = am.change_password(username="bjensen", user_data=user_data)
+    am.logout()
+
+    assert not data
+
+
+def test_change_password_no_username():
+    """ Will delete an identity when no username is provided.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        user_data = {"currentpassword": "secret12", "userpassword": "secret13"}
+        am.change_password(user_data=user_data)
+    assert excinfo.value.message == 'Please provide a username.'
+
+
+def test_change_password_no_user_data():
+    """ Will delete an identity when no username is provided.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        user_data = {"currentpassword": "secret12", "userpassword": "secret13"}
+        am.change_password(username="bjensen")
+    assert excinfo.value.message == 'Please provide correct user information.'
+
+
 def test_delete_identity():
     """ Will delete a identity.
     :return:
@@ -485,3 +535,140 @@ def test_delete_identity_no_username():
         am.authenticate(username="amadmin", password="password_openam")
         am.delete_identity()
     assert excinfo.value.message == 'Please provide a username.'
+
+
+def test_create_realm():
+    """ Will create a realm.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+    am.authenticate(username="amadmin", password="password_openam")
+    realm_data = {"realm": "myRealm"}
+    data = am.create_realm(realm_data=realm_data)
+    am.logout()
+
+    assert data == {u'realmCreated': u'/myRealm'}
+
+
+def test_create_realm_no_realm_data():
+    """ Will delete an identity when no username is provided.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        am.create_realm()
+    assert excinfo.value.message == 'Please provide correct realm_data information.'
+
+
+def test_get_realm():
+    """ Will get a realm.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+    am.authenticate(username="amadmin", password="password_openam")
+    data = am.get_realm(realm="myRealm")
+    am.logout()
+
+    assert len(data['serviceNames']) == 9
+
+
+def test_get_realm_wrong_realm():
+    """ Will get a realm.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+    am.authenticate(username="amadmin", password="password_openam")
+    data = am.get_realm(realm="wrong")
+    am.logout()
+
+    assert not data
+
+
+def test_get_realm_no_realm_data():
+    """ Will delete an identity when no username is provided.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        am.get_realm()
+    assert excinfo.value.message == 'Please provide correct realm name.'
+
+
+def test_list_realms_wrong_realm():
+    """
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+    am.authenticate(username="amadmin", password="password_openam")
+    data = am.list_realms(realm="wrong")
+    assert not data
+
+
+def test_list_realms():
+    """
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+    am.authenticate(username="amadmin", password="password_openam")
+    data = am.list_realms()
+    assert data['result'] == ['/', '/myRealm']
+
+
+def test_update_realm():
+    """ Will create a realm.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+    am.authenticate(username="amadmin", password="password_openam")
+    realm_data = {"sunOrganizationStatus": "Inactive"}
+    data = am.update_realm(realm="myRealm", realm_data=realm_data)
+    am.logout()
+
+    assert data == {u'realmUpdated': u'/myRealm'}
+
+
+def test_update_realm_no_realm():
+    """ Will delete an identity when no username is provided.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        realm_data = {"sunOrganizationStatus": "Inactive"}
+        am.update_realm(realm_data=realm_data)
+    assert excinfo.value.message == 'Please provide a realm.'
+
+
+def test_update_realm_no_realm_data():
+    """ Will delete an identity when no username is provided.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        am.update_realm(realm="myRealm")
+    assert excinfo.value.message == 'Please provide correct realm_data information.'
+
+
+def test_delete_realm():
+    """ Will delete a realm.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+    am.authenticate(username="amadmin", password="password_openam")
+    data = am.delete_realm(realm="myRealm")
+    am.logout()
+
+    assert data['success']
+
+def test_delete_realm_no_realm():
+    """ Will delete an identity when no realm is provided.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        am.delete_realm()
+    assert excinfo.value.message == 'Please provide a realm.'

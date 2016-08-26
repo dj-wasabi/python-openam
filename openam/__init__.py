@@ -450,7 +450,7 @@ class Openam(object):
         :param username: The username/agentname/groupname that needs to be deleted.
         :type username: str
         :rtype: json
-        :return: Json information if the deleting went successful.
+        :return: Information if the deleting went successful.
         :Example:
             >>> import openam
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -464,5 +464,158 @@ class Openam(object):
 
         type = self._type_validator(type=type)
         uri = self._uri_realm_creator(realm=realm, uri=type + '/' + username)
+        data = self._delete(uri=uri, headers=self.headers)
+        return data.json()
+
+    def change_password(self, username=None, user_data=None):
+        """Change the password for the given user.
+
+        :param username: The username of the identity.
+        :type username: str
+        :param user_data: The old and new password.
+        :type user_data: dict
+        :rtype: bool
+        :return:
+        :Example:
+            >>> import openam
+            >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+            >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
+            >>> user_data = {"currentpassword": "secret12", "userpassword": "secret13"}
+            >>> am.change_password(username="bjensen", user_data=user_data)
+            True
+            >>> am.logout()
+        """
+        if not username:
+            raise ValueError("Please provide a username.")
+
+        if not user_data:
+            raise ValueError("Please provide correct user information.")
+
+        user_data = str(json.dumps(user_data))
+        uri = 'json/users/' + username + '?_action=changePassword'
+        data = self._post(uri=uri, data=user_data, headers=self.headers)
+        if data.status_code == 200:
+            return True
+        else:
+            return False
+
+    def create_realm(self, realm_data=None):
+        """Creating a realm.
+
+        :param realm_data: Realm data that is needed for creating the realm.
+        :type realm_data: dict
+        :rtype: dict
+        :return: Name of the realm.
+        :Example:
+            >>> import openam
+            >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+            >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
+            >>> realm_data = {"realm": "myRealm"}
+            >>> am.create_realm(realm_data=realm_data)
+            {u'realmCreated': u'/myRealm'}
+            >>> am.logout()
+        """
+        if not realm_data:
+            raise ValueError("Please provide correct realm_data information.")
+
+        realm_data = str(json.dumps(realm_data))
+        uri = 'json/realms/?_action=create'
+        data = self._post(uri=uri, data=realm_data, headers=self.headers)
+        return data.json()
+
+    def get_realm(self, realm=None):
+        """Get information of the given realm.
+
+        :param realm: The name of the realm.
+        :type realm: str
+        :rtype: dict
+        :return: All information about the realm.
+        :Example:
+            >>> import openam
+            >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+            >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
+            >>> am.get_realm(realm="myRealm")
+            {u'serviceNames': [u'sunAMDelegationService', u'iPlanetAMAuthService', u'iPlanetAMPolicyConfigService', .. }
+            >>> am.logout()
+        """
+        if not realm:
+            raise ValueError("Please provide correct realm name.")
+
+        uri = 'json/realms/' + realm
+        data = self._get(uri=uri, headers=self.headers)
+        if data.status_code == 200:
+            return data.json()
+        else:
+            return False
+
+    def list_realms(self, realm=None):
+        """Get information on all (sub) realms that are configured.
+
+        :param realm: The name of the realm.
+        :type realm: str
+        :rtype: dict
+        :return: Information with all realms.
+        :Example:
+            >>> import openam
+            >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+            >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
+            >>> am.list_realms()
+            {u'totalPagedResultsPolicy': u'NONE', u'pagedResultsCookie': None, u'totalPagedResults': -1, u'result': [u'/', u'/myRealm']
+            >>> am.logout()
+        """
+        uri = self._uri_realm_creator(realm=realm, uri='realms?_queryFilter=true')
+        data = self._get(uri=uri, headers=self.headers)
+        if data.status_code == 200:
+            return data.json()
+        else:
+            return False
+
+    def update_realm(self, realm=None, realm_data=None):
+        """Updating a realm.
+
+        :param realm: The name of the realm.
+        :type realm: str
+        :param realm_data: Realm data that is needed for updating the realm.
+        :rtype: dict
+        :return: Information if the update is successful.
+        :Example:
+            >>> import openam
+            >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+            >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
+            >>> realm_data = {"sunOrganizationStatus": "Inactive"}
+            >>> am.update_realm(realm="myRealm", realm_data=realm_data)
+            {u'realmUpdated': u'/myRealm'}
+            >>> am.logout()
+        """
+        if not realm:
+            raise ValueError("Please provide a realm.")
+
+        if not realm_data:
+            raise ValueError("Please provide correct realm_data information.")
+
+        uri = 'json/realms/' + realm
+        realm_data = str(json.dumps(realm_data))
+        data = self._put(uri=uri, data=realm_data, headers=self.headers)
+        return data.json()
+
+    def delete_realm(self, realm=None):
+        """Deleting a realm.
+
+        :param realm: The name of the realm.
+        :type realm: str
+        :rtype: dict
+        :return: Information if delete is successful.
+        :Example:
+            >>> import openam
+            >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+            >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
+            >>> am.delete_realm(realm="myRealm")
+            {u'success': u'true'}
+            >>> am.logout()
+        """
+        if not realm:
+            raise ValueError("Please provide a realm.")
+
+        uri = 'json/realms/' + realm
         data = self._delete(uri=uri, headers=self.headers)
         return data.json()
