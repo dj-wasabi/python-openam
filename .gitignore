@@ -5,6 +5,6 @@ python_openam.egg-info
 dist/
 .coverage
 docs/results.xml
-docs/build/html/
+docs/build
 run-me.py
 

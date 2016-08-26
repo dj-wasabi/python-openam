@@ -19,6 +19,105 @@ def test___init__openam_url():
     assert excinfo.value.message == 'This interface needs an OpenAM URL to work!'
 
 
+def test__get():
+    """Test the _get function with wrong_uri.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam")
+    data = am._get(uri='wrong_uri')
+    assert not data
+
+
+def test__post():
+    """Test the _post function with wrong_uri.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam")
+    data = am._post(uri='wrong_uri', data='{}', headers={})
+    assert not data
+
+
+def test__post_wrong_port():
+    """Test the _post function on wrong port.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:880/opeam")
+    data = am._post(uri='wrong_uri', data='{}', headers={})
+    assert 'error' in data
+
+
+def test__put():
+    """Test the _put function with wrong_uri.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam")
+    data = am._put(uri='wrong_uri', data='{}', headers={})
+    assert not data
+
+
+def test__put_wrong_port():
+    """Test the _put function on wrong port.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:880/opeam")
+    data = am._put(uri='wrong_uri', data='{}', headers={})
+    assert 'error' in data
+
+
+def test__delete():
+    """Test the _delete function with wrong_uri.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam")
+    data = am._delete(uri='wrong_uri')
+    assert not data
+
+
+def test__delete_wrong_port():
+    """Test the _delete function on wrong port.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:880/opeam")
+    data = am._delete(uri='wrong_uri')
+    assert 'error' in data
+
+
+def test__uri_realm_creator():
+    """
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/opeam")
+    data = am._uri_realm_creator(uri='wrong_uri')
+    assert data == 'json/wrong_uri'
+
+
+def test__uri_realm_creator_test_realm():
+    """
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/opeam")
+    data = am._uri_realm_creator(realm="test", uri='wrong_uri')
+    assert data == 'json/test/wrong_uri'
+
+
+def test__type_validator():
+    """
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/opeam")
+    data = am._type_validator(type="groups")
+    assert data == 'groups'
+
+
+def test__type_validator_wrong_type():
+    """
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/opeam")
+    data = am._type_validator(type="wrong")
+    assert data == 'users'
+
+
 def test_authenticate():
     """Test the authentication function.
     :return:
@@ -142,6 +241,17 @@ def test_token_validation_wrong():
     assert not data['valid']
 
 
+def test_token_validation_wrong_realm():
+    """Test a wrong token to validate.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+    auth_data = am.authenticate(username="amadmin", password="password_openam")
+    data = am.token_validation(token=auth_data['tokenId'], realm="wrong")
+    am.logout()
+    assert not data
+
+
 def test_session_information():
     """Validate if a token is Active.
     :return:
@@ -203,7 +313,7 @@ def test_create_identity():
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
     am.authenticate(username="amadmin", password="password_openam")
-    user_data = '{"username": "bjensen", "userpassword": "secret12", "mail": "bjensen@example.com"}'
+    user_data = {"username": "bjensen", "userpassword": "secret12", "mail": "bjensen@example.com"}
     data = am.create_identity(user_data=user_data)
     am.logout()
 
@@ -216,7 +326,7 @@ def test_create_identity_with_wrong_type():
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
     am.authenticate(username="amadmin", password="password_openam")
-    user_data = '{"username": "bjensen", "userpassword": "secret12", "mail": "bjensen@example.com"}'
+    user_data = {"username": "bjensen", "userpassword": "secret12", "mail": "bjensen@example.com"}
     data = am.create_identity(user_data=user_data, type="wrong")
     am.logout()
 
@@ -324,7 +434,7 @@ def test_update_identity():
     """
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
     am.authenticate(username="amadmin", password="password_openam")
-    user_data = '{ "mail": "demo@example.com" }'
+    user_data = {"mail": "demo@example.com"}
     data = am.update_identity(username="demo", user_data=user_data)
     am.logout()
 
@@ -338,7 +448,7 @@ def test_update_identity_no_username():
     with pytest.raises(ValueError) as excinfo:
         am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
         am.authenticate(username="amadmin", password="password_openam")
-        user_data = '{}'
+        user_data = {}
         am.update_identity(user_data=user_data)
     assert excinfo.value.message == 'Please provide a username.'
 
@@ -375,4 +485,3 @@ def test_delete_identity_no_username():
         am.authenticate(username="amadmin", password="password_openam")
         am.delete_identity()
     assert excinfo.value.message == 'Please provide a username.'
-
