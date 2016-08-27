@@ -17,7 +17,7 @@ Welcome to python-openam's documentation!
 .. image:: https://badge.fury.io/py/python-openam.svg
     :target: https://badge.fury.io/py/python-openam
 
-.. image:: https://github.com/dj-wasabi/python-openam/blob/master/coverage.svg
+.. image:: https://cdn.rawgit.com/dj-wasabi/python-openam/master/coverage.svg
 
 Contents:
 

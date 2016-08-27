@@ -1,6 +1,6 @@
 # python-openam
 
-![Coverage](coverage.svg) [![Build Status](https://travis-ci.org/dj-wasabi/python-openam.svg?branch=master)](https://travis-ci.org/dj-wasabi/python-openam) [![PyPI version](https://badge.fury.io/py/python-openam.svg)](https://badge.fury.io/py/python-openam) [![Documentation](https://readthedocs.org/projects/python-openam/badge/?version=latest)](http://python-openam.readthedocs.org/en/latest/?badge=latest)
+![Coverage](https://cdn.rawgit.com/dj-wasabi/python-openam/master/coverage.svg) [![Build Status](https://travis-ci.org/dj-wasabi/python-openam.svg?branch=master)](https://travis-ci.org/dj-wasabi/python-openam) [![PyPI version](https://badge.fury.io/py/python-openam.svg)](https://badge.fury.io/py/python-openam) [![Documentation](https://readthedocs.org/projects/python-openam/badge/?version=latest)](http://python-openam.readthedocs.org/en/latest/?badge=latest)
 
 This is a python module for managing and configuring an OpenAM instance via the API.
 
