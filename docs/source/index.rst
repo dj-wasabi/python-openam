@@ -6,6 +6,19 @@
 Welcome to python-openam's documentation!
 =========================================
 
+.. image:: https://readthedocs.org/projects/python-openam/badge/?version=latest
+    :target: http://python-openam.readthedocs.org/en/latest/?badge=latest
+    :alt: Documentation Status
+
+.. image:: https://travis-ci.org/dj-wasabi/python-openam.svg?branch=master
+    :target: https://travis-ci.org/dj-wasabi/python-openam
+    :alt: Build Status
+
+.. image:: https://badge.fury.io/py/python-openam.svg
+    :target: https://badge.fury.io/py/python-openam
+
+.. image:: https://github.com/dj-wasabi/python-openam/blob/master/coverage.svg
+
 Contents:
 
 .. toctree::
@@ -14,6 +27,7 @@ Contents:
    introduction
    api
    tests
+
 
 
 Indices and tables

@@ -1,12 +1,11 @@
 # coding=utf-8
 
 from __future__ import print_function
-from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
-import codecs
+from distutils.core import setup, Command
+import subprocess
 import os
 import sys
-import re
 import ast
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -51,6 +50,44 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
+class Pep(Command):
+    description = "Running pep commands to verify standards"
+    user_options = []
+
+    def initialize_options(self):
+        self.cwd = None
+
+    def finalize_options(self):
+        self.cwd = os.getcwd()
+
+    def run(self):
+        assert os.getcwd() == self.cwd, 'Must be in package root: %s' % self.cwd
+        list_of_peps = ['pep8', 'pep257']
+        for pep in list_of_peps:
+            command = [pep + " openam"]
+            proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+            proc.wait()
+
+            if proc.returncode != 0:
+                print(proc.stdout.read())
+
+
+class Coverage(Command):
+    description = "Creating the coverage svg file."
+    user_options = []
+
+    def initialize_options(self):
+        self.cwd = None
+
+    def finalize_options(self):
+        self.cwd = os.getcwd()
+
+    def run(self):
+        assert os.getcwd() == self.cwd, 'Must be in package root: %s' % self.cwd
+        command = ["coverage-badge -o coverage.svg"]
+        proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+        proc.wait()
+
 setup(name='python-openam',
       version=info.get('__version__', '0.0.0'),
       description='Managing OpenAM via rest API',
@@ -62,11 +99,18 @@ setup(name='python-openam',
       license=info.get('__license__', '0.0.0'),
       packages=['openam'],
       install_requires = [
-            'requests',
-            'pytest-cov',
+        'requests',
+        'pytest-cov',
+        'coverage-badge',
+        'pep8',
+        'pep257'
       ],
       tests_require=['pytest'],
-      cmdclass={'test': PyTest},
+      cmdclass={
+          'test': PyTest,
+          'pep': Pep,
+          'cov': Coverage
+      },
       platforms='any',
       test_suite='openam.tests.test_openam',
       extras_require={

@@ -17,20 +17,10 @@ At the moment, there are 2 pep validation tests:
 * pep8
 * pep257
 
-
-pep8
-====
-
-pep8 Is for validating the python style guide. First test is validating if the module complies with this standard. There is one exception, this is test 'E501' (Line to long).
-Unless there is a very good argument to validate on this, it will be disabled for now. With the current monitor resolutions there is no need for testing on this.
-
-pep257
-======
-Pep257 is used for validating the docstrings.
-
+pep8 Is for validating the python style guide. First test is validating if the module complies with this standard. Pep257 is used for validating the docstrings.
 
 PyTest
 ******
 
 When the pep tests are completed, PyTest is executed.
-First a OpenAM docker container is started. This container boots up an OpenAM instance and configured a basic site with an embedded OpenDJ. When this is booted correctly (It checks every 5 seconds when the isAlive.jsp returns a '200'.)
+First a OpenAM docker container is started. This container boots up an OpenAM instance and configured a basic site with an embedded OpenDJ. When the docker container is booted correctly (It checks every 5 seconds when the isAlive.jsp returns a '200'.) all tests are executed.

@@ -150,7 +150,10 @@ class Openam(object):
         return type
 
     def authenticate(self, realm=None, username=None, password=None):
-        """Will authenticate the configured user on OpenAM. When successful, a http header is added to the current headers with the the value of the 'cookiename' (Default is set to 'iplanetDirectoryPro') name and has the value from the retrieved tokenId.
+        """Will authenticate the configured user on OpenAM.
+
+        When successful, a http header is added to the current headers with the the value of the 'cookiename'
+        (Default is set to 'iplanetDirectoryPro') name and has the value from the retrieved tokenId.
 
         :param realm: The name of the realm on which the user needs to auhtenticate on. (Optional, when realms are used.)
         :type realm: str
@@ -160,13 +163,12 @@ class Openam(object):
         :type password: str
         :rtype: dict
         :return: A dict with the keys 'succesUrl' and 'tokenId'.
-
         :Example:
             >>> import openam
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
             >>> am.authenticate(username="amadmin", password="password_openam")
             >>> am.logout()
-            {u'successUrl': u'/openam/console', u'tokenId': u'AQIC5wM2LY4SfcxpamATDDJ7bGltWGY0fjfPO12mGFymFk8.*AAJTSQACMDEAAlNLABMyODU1MTgzNzIyNDI1MDA3OTE1AAJTMQAA*'}
+            {u'successUrl': u'/openam/console', u'tokenId': u'AQIC5wM2LY4SfcxpamATDDJ7bGltWGY0fjfPO12mGFymFk8.*AAJTSQA.. '}
             >>> am.logout()
         """
         if not username:
