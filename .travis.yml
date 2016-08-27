@@ -13,16 +13,12 @@ before_install:
 - sudo apt-get -qq update
 - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
 
-install:
-- pip install pep8 pep257 coverage
-
 before_script:
-- pep8 openam --ignore=E501
-- pep257 openam
+- python setup.py pep
+- python setup.py cov
 
 script:
 - bash scripts/start_docker.sh 13.0.0
 - sleep 5
-- python setup.py test || echo "ignoring_first_test"
 - python setup.py test
 - bash scripts/stop_docker.sh

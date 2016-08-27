@@ -1,10 +1,89 @@
 Introduction
 ============
 
-This module is a python wrapper for the OpenAM API. With this module you can easy make use of the OpenAM API.
+This module is a python wrapper for the OpenAM API. With this module you can easy make use of the OpenAM API. The goal is to fully configure an OpenAM instance via the API.
 
-Github page: https://github.com/dj-wasabi/python-openam
+Information:
 
+* Github page: https://github.com/dj-wasabi/python-openam
+* PyPi page: https://pypi.python.org/pypi/python-openam
+* Docker container: https://hub.docker.com/r/wdijkerman/openam/
+
+
+
+OpenAM Versions
+***************
+
+This python module should work with the following versions of OpenAM:
+
+* 12.0.0
+* 13.0.0
+
+Tests will validate that the module works on these versions. There is no plan yet to update the module so it can also handle older "legacy" versions.
+
+What is working in the current version of this module.
+The following (json/) endpoints work:
+
++--------------------+------------+-----------+
+| endpoint           | OpenAM 12  | OpenAM 13 |
++====================+============+===========+
+| /authenticate      |  V         |    V      |
++--------------------+------------+-----------+
+| /users             |  V         |    V      |
++--------------------+------------+-----------+
+| /groups            |  V         |    V      |
++--------------------+------------+-----------+
+| /agents            |  V         |    V      |
++--------------------+------------+-----------+
+| /realms            |  V         |    V      |
++--------------------+------------+-----------+
+| /dashboard         |  .         |    .      |
++--------------------+------------+-----------+
+| /sessions          |  .         |    .      |
++--------------------+------------+-----------+
+| /serverinfo/*      |  V         |    V      |
++--------------------+------------+-----------+
+| /applications      |  .         |    .      |
++--------------------+------------+-----------+
+| /resourcetypes     |  .         |    .      |
++--------------------+------------+-----------+
+| /policies          |  .         |    .      |
++--------------------+------------+-----------+
+| /applicationtypes  |  .         |    .      |
++--------------------+------------+-----------+
+| /conditiontypes    |  .         |    .      |
++--------------------+------------+-----------+
+| /subjecttypes      |  .         |    .      |
++--------------------+------------+-----------+
+| /subjectattributes |  .         |    .      |
++--------------------+------------+-----------+
+| /decisioncombiners |  .         |    .      |
++--------------------+------------+-----------+
+| /subjectattributes |  .         |    .      |
++--------------------+------------+-----------+
+
+V = Works
+
+. = Not working (yet)
+
+
+The following (xacml/) endpoints work:
+
++--------------------+------------+-----------+
+| endpoint           | OpenAM 12  | OpenAM 13 |
++====================+============+===========+
+| /policies          |  .         |    .      |
++--------------------+------------+-----------+
+
+The following (frrest/) endpoints work:
+
++--------------------+------------+-----------+
+| endpoint           | OpenAM 12  | OpenAM 13 |
++====================+============+===========+
+| /token             |  .         |    .      |
++--------------------+------------+-----------+
+| /client            |  .         |    .      |
++--------------------+------------+-----------+
 
 
 Installation
@@ -32,13 +111,3 @@ The following is a basic example for authenticating and doing an logout on OpenA
     am.logout()
 
 You'll have to update the 'openam_url' and both the 'username' and 'password' for your setup.
-
-OpenAM Versions
-***************
-
-This python module should work with the following versions of OpenAM:
-
-* 12.0.0
-* 13.0.0
-
-Tests will validate that the module works on these versions.
