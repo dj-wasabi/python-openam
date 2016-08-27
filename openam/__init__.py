@@ -23,7 +23,7 @@ class Openam(object):
         :param timeout: HTTP requests timeout in seconds.
         :type timeout: int
         :param cookiename: The name of the cookie.
-        :type cookiename: String
+        :type cookiename: str
         """
         if not openam_url:
             raise ValueError('This interface needs an OpenAM URL to work!')
@@ -128,7 +128,7 @@ class Openam(object):
         :param uri: The uri after the 'realm' part.
         :type uri: str
         :rtype: str
-        :return:
+        :return: Returns a uri with or without the realm.
         """
         if realm is not None:
             uri = 'json/' + realm + '/' + uri
@@ -143,7 +143,7 @@ class Openam(object):
         :param type: The name of the type
         :type type: str
         :rtype: str
-        :return: The type
+        :return: The correct type.
         """
         if type not in ['agents', 'users', 'groups']:
             type = 'users'
@@ -271,7 +271,7 @@ class Openam(object):
         :param token: The token id.
         :type token: str
         :rtype: dict
-        :return: Information
+        :return: Information about the session.
         :Example:
             >>> import openam
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -309,7 +309,7 @@ class Openam(object):
         :param user_data: All necessary information needed to create an identity.
         :type user_data: dict
         :rtype: json
-        :return:
+        :return: All information regarding the created identity.
         :Example:
             >>> import openam
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -344,7 +344,7 @@ class Openam(object):
         :param query: Search pattern for finding the correct username/agentname/groupname.
         :type query: str
         :rtype: json
-        :return: Information of the found identity.
+        :return: Information of the found identities.
         :Example:
             >>> import openam
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -377,7 +377,7 @@ class Openam(object):
         :param fields: The fields you want to retrieve. When None is given, all information is returned.
         :type fields: str
         :rtype: json
-        :return: False when no user is found, otherwise a dict with information about the user.
+        :return: False when no user is found, otherwise information about the identity.
         :Example:
             >>> import openam
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -416,7 +416,7 @@ class Openam(object):
         :param user_data: The information you want to update.
         :type user_data: dict
         :rtype: json
-        :return: Json information.
+        :return: All information regarding the updated identity.
         :Example:
             >>> import openam
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -477,7 +477,7 @@ class Openam(object):
         :param user_data: The old and new password.
         :type user_data: dict
         :rtype: bool
-        :return:
+        :return: True when successful password change, otherwise a False.
         :Example:
             >>> import openam
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
@@ -507,7 +507,7 @@ class Openam(object):
         :param realm_data: Realm data that is needed for creating the realm.
         :type realm_data: dict
         :rtype: dict
-        :return: Name of the realm.
+        :return: All information regarding the created realm.
         :Example:
             >>> import openam
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")

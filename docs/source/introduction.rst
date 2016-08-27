@@ -3,7 +3,13 @@ Introduction
 
 This module is a python wrapper for the OpenAM API. With this module you can easy make use of the OpenAM API. The goal is to fully configure an OpenAM instance via the API.
 
-Github page: https://github.com/dj-wasabi/python-openam
+Information:
+
+* Github page: https://github.com/dj-wasabi/python-openam
+* PyPi page: https://pypi.python.org/pypi/python-openam
+* Docker container: https://hub.docker.com/r/wdijkerman/openam/
+
+
 
 OpenAM Versions
 ***************
@@ -13,7 +19,7 @@ This python module should work with the following versions of OpenAM:
 * 12.0.0
 * 13.0.0
 
-Tests will validate that the module works on these versions.
+Tests will validate that the module works on these versions. There is no plan yet to update the module so it can also handle older "legacy" versions.
 
 What is working in the current version of this module.
 The following (json/) endpoints work:
@@ -21,21 +27,21 @@ The following (json/) endpoints work:
 +--------------------+------------+-----------+
 | endpoint           | OpenAM 12  | OpenAM 13 |
 +====================+============+===========+
-| /authenticate      |  √         |   √       |
+| /authenticate      |  V         |    V      |
 +--------------------+------------+-----------+
-| /users             |  √         |    √      |
+| /users             |  V         |    V      |
 +--------------------+------------+-----------+
-| /groups            |  √         |    √      |
+| /groups            |  V         |    V      |
 +--------------------+------------+-----------+
-| /agents            |  √         |    √      |
+| /agents            |  V         |    V      |
 +--------------------+------------+-----------+
-| /realms            |  √         |    √      |
+| /realms            |  V         |    V      |
 +--------------------+------------+-----------+
 | /dashboard         |  .         |    .      |
 +--------------------+------------+-----------+
 | /sessions          |  .         |    .      |
 +--------------------+------------+-----------+
-| /serverinfo/*      |  √         |    √      |
+| /serverinfo/*      |  V         |    V      |
 +--------------------+------------+-----------+
 | /applications      |  .         |    .      |
 +--------------------+------------+-----------+
@@ -55,6 +61,10 @@ The following (json/) endpoints work:
 +--------------------+------------+-----------+
 | /subjectattributes |  .         |    .      |
 +--------------------+------------+-----------+
+
+V = Works
+
+. = Not working (yet)
 
 
 The following (xacml/) endpoints work:

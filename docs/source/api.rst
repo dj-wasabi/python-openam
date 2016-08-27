@@ -1,5 +1,5 @@
-openam-api
-==========
+API
+===
 
 This page will describe all available functions which can be used on a OpenAM instance.
 

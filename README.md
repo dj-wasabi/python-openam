@@ -64,5 +64,5 @@ The following (frrest/) endpoints work:
 # Issues
 
 Of course there are issues, please let me know. Also if you want to help me add functionality to the module, let me know and create a Pull Request.
-All help is welcome. :-)
 
+All help is welcome. :-)
