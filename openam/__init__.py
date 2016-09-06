@@ -149,6 +149,17 @@ class Openam(object):
             type = 'users'
         return type
 
+    def _to_string(self, data=None):
+        if not data:
+            raise ValueError("Please provide a correct data structure.")
+
+        if isinstance(data, dict):
+            return str(json.dumps(data))
+        elif isinstance(data, list):
+            return ' '.join(data)
+        else:
+            return data
+
     def authenticate(self, realm=None, username=None, password=None):
         """Will authenticate the configured user on OpenAM.
 
@@ -167,7 +178,6 @@ class Openam(object):
             >>> import openam
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
             >>> am.authenticate(username="amadmin", password="password_openam")
-            >>> am.logout()
             {u'successUrl': u'/openam/console', u'tokenId': u'AQIC5wM2LY4SfcxpamATDDJ7bGltWGY0fjfPO12mGFymFk8.*AAJTSQA.. '}
             >>> am.logout()
         """
@@ -177,7 +187,7 @@ class Openam(object):
         if not password:
             raise ValueError("You will need to provide a password to login.")
 
-        post_data = {}
+        post_data = '{}'
         headers = self.headers
         cookiename = self.cookiename
         headers['X-OpenAM-Username'] = username
@@ -257,7 +267,7 @@ class Openam(object):
         """
         token_url = 'sessions/' + token + '?_action=validate'
         uri = self._uri_realm_creator(realm=realm, uri=token_url)
-        data = self._post(uri=uri, data={}, headers=self.headers)
+        data = self._post(uri=uri, data='{}', headers=self.headers)
         if data.status_code == 200:
             return data.json()
         else:
@@ -286,7 +296,7 @@ class Openam(object):
             raise ValueError("Please provide a token.")
 
         uri = 'json/sessions/?_action=' + action + '&tokenId=' + token
-        data = self._post(uri=uri, data={}, headers=self.headers)
+        data = self._post(uri=uri, data='{}', headers=self.headers)
         if data.status_code == 200:
             return data.json()
         else:
@@ -324,7 +334,7 @@ class Openam(object):
         if not user_data:
             raise ValueError("Please provide correct user information.")
 
-        user_data = str(json.dumps(user_data))
+        user_data = self._to_string(data=user_data)
         type = self._type_validator(type=type)
         uri = self._uri_realm_creator(realm=realm, uri=type + '/?_action=create')
         data = self._post(uri=uri, data=user_data, headers=self.headers)
@@ -432,7 +442,7 @@ class Openam(object):
         if not user_data:
             raise ValueError("Please provide correct user information.")
 
-        user_data = str(json.dumps(user_data))
+        user_data = self._to_string(data=user_data)
         type = self._type_validator(type=type)
         uri = self._uri_realm_creator(realm=realm, uri=type + '/' + username)
         data = self._put(uri=uri, data=user_data, headers=self.headers)
@@ -493,7 +503,7 @@ class Openam(object):
         if not user_data:
             raise ValueError("Please provide correct user information.")
 
-        user_data = str(json.dumps(user_data))
+        user_data = self._to_string(data=user_data)
         uri = 'json/users/' + username + '?_action=changePassword'
         data = self._post(uri=uri, data=user_data, headers=self.headers)
         if data.status_code == 200:
@@ -520,7 +530,7 @@ class Openam(object):
         if not realm_data:
             raise ValueError("Please provide correct realm_data information.")
 
-        realm_data = str(json.dumps(realm_data))
+        realm_data = self._to_string(data=realm_data)
         uri = 'json/realms/?_action=create'
         data = self._post(uri=uri, data=realm_data, headers=self.headers)
         return data.json()
@@ -595,8 +605,8 @@ class Openam(object):
         if not realm_data:
             raise ValueError("Please provide correct realm_data information.")
 
+        realm_data = self._to_string(data=realm_data)
         uri = 'json/realms/' + realm
-        realm_data = str(json.dumps(realm_data))
         data = self._put(uri=uri, data=realm_data, headers=self.headers)
         return data.json()
 
@@ -621,3 +631,161 @@ class Openam(object):
         uri = 'json/realms/' + realm
         data = self._delete(uri=uri, headers=self.headers)
         return data.json()
+
+    def list_resourcetypes(self, realm=None, query=None):
+        """Listing all resourcetypes that are available.
+
+        :param realm: The name of the realm.
+        :type realm: str
+        :param query:
+        :type query: str
+        :rtype: dict
+        :return: Information about all resourcetypes.
+        :Example:
+            >>> import openam
+            >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+            >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
+            >>> am.list_resourcetypes()
+            {u'totalPagedResultsPolicy': u'NONE', u'pagedResultsCookie': None, u'totalPagedResults': -1, u'result': [{u'description': u'The built-in delegation ..' ..
+            >>> am.logout()
+        """
+        if query is None:
+            query = str(True)
+
+        uri = self._uri_realm_creator(realm=realm, uri='resourcetypes?_queryFilter=' + query)
+        data = self._get(uri=uri, headers=self.headers)
+        if data.status_code == 200:
+            return data.json()
+        else:
+            return False
+
+    def get_resourcetype(self, realm=None, uuid=None):
+        """Get all information about a specific resourcetype.
+
+        :param realm: The name of the realm.
+        :typr realm: str
+        :param uuid: The unique uuid.
+        :type uuid: str
+        :rtype: dict
+        :return: All information about one resourcetype.
+        :Example:
+            >>> import openam
+            >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+            >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
+            >>> am.get_resourcetype(uuid='20a13582-1f32-4f83-905f-f71ff4e2e00d')
+            {u'description': u'The built-in delegation Resource Type available to OpenAM Policies.', u'lastModifiedDate': 1422892465848, ...
+            >>> am.logout()
+        """
+        if not uuid:
+            raise ValueError("Please provide a uuid for a resourcetype.")
+
+        uri = self._uri_realm_creator(realm=realm, uri='resourcetypes/' + uuid)
+        data = self._get(uri=uri, headers=self.headers)
+        if data.status_code == 200:
+            return data.json()
+        else:
+            return False
+
+    def create_resourcetype(self, realm=None, resource_data=None):
+        """Creating a resouretype.
+
+        :param realm: The name of the realm.
+        :type realm: str
+        :param resource_data: All information needed for creating the resourcetype.
+        :type resource_data: dict
+        :rtype: dict
+        :return: Information about the just created resourcetype.
+        :Example:
+            >>> import openam
+            >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+            >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
+            >>> create_resourcetype = {
+            >>>     "name": "My Resource Type",
+            >>>     "actions": {
+            >>>         "LEFT": "true",
+            >>>         "RIGHT": "true",
+            >>>         "UP": "true",
+            >>>         "DOWN": "true"
+            >>>     },
+            >>>     "patterns": [
+            >>>         "http://device/location/*"
+            >>>     ]
+            >>> }
+            >>> am.create_resourcetype(resource_data=create_resourcetype)
+            {u'description': None, u'lastModifiedDate': 1472947547951, u'actions': {u'DOWN': True ...
+            >>> am.logout()
+        """
+        if not resource_data:
+            raise ValueError("Please provide correct resource_data information.")
+
+        resource_data = self._to_string(data=resource_data)
+        uri = self._uri_realm_creator(realm=realm, uri='resourcetypes/?_action=create')
+        data = self._post(uri=uri, data=resource_data, headers=self.headers)
+        return data.json()
+
+    def update_resourcetype(self, realm=None, uuid=None, resource_data=None):
+        """Updating a resourcetype.
+
+        :param realm: The name of the realm.
+        :type realm: str
+        :param uuid: The unique uuid.
+        :type uuid: str
+        :param resource_data: All information needed for updating the resourcetype.
+        :type resource_data: dict
+        :rtype: dict
+        :return: Information about the updated resourcetype.
+        :Example:
+            >>> import openam
+            >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+            >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
+            >>> resource_data = {
+            >>>     "uuid": "c1d1c11b-f101-4ecd-ab6f-26044e027f87",
+            >>>     "name": "My Updated Resource Type",
+            >>>     "actions": {
+            >>>         "LEFT": "false",
+            >>>         "RIGHT": "false",
+            >>>         "UP": "false",
+            >>>         "DOWN": "false"
+            >>>     },
+            >>>     "patterns": [
+            >>>         "http://device/location/*"
+            >>>     ]
+            >>> }
+            {u'description': None, u'lastModifiedDate': 1472947723472, u'actions': { ... }, u'name': u'My Updated Resource Type',
+            >>> am.logout()
+        """
+        if not uuid:
+            raise ValueError("Please provide a uuid for a resourcetype.")
+
+        if not resource_data:
+            raise ValueError("Please provide correct resource_data information.")
+
+        resource_data = self._to_string(data=resource_data)
+        uri = self._uri_realm_creator(realm=realm, uri='resourcetypes/' + uuid)
+        data = self._put(uri=uri, data=resource_data, headers=self.headers)
+        return data.json()
+
+    def delete_resourcetype(self, realm=None, uuid=None):
+        """Deleting a resourcetype by providing a uuid.
+
+        :param realm: The name of the realm.
+        :type realm: str
+        :param uuid: The unique uuid.
+        :type uuid: str
+        :rtype: dict
+        :return: Not much.
+        :Example:
+            >>> import openam
+            >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+            >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
+            >>> am.delete_resourcetype(uuid="c1d1c11b-f101-4ecd-ab6f-26044e027f87")
+            {}
+            >>> am.logout()
+        """
+        if not uuid:
+            raise ValueError("Please provide a uuid for a resourcetype.")
+
+        uri = self._uri_realm_creator(realm=realm, uri='resourcetypes/' + uuid)
+        data = self._delete(uri=uri, headers=self.headers)
+        return data.json()
+
