@@ -2,12 +2,20 @@
 
 import sys
 import os
+import requests
 import pytest
 
 my_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, my_path + '/../')
 
 import openam
+
+
+@pytest.fixture
+def openam_version(scope='function', params=None, autouse=False):
+    url = 'http://openam.example.com:8080/version'
+    version = requests.get(url, timeout=10)
+    return int(version.text.rstrip())
 
 
 def test___init__openam_url():
@@ -116,6 +124,43 @@ def test__type_validator_wrong_type():
     am = openam.Openam(openam_url="http://openam.example.com:8080/opeam")
     data = am._type_validator(type="wrong")
     assert data == 'users'
+
+
+def test__to_string_no_data():
+    """Test the _to_string without any data.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        data = am._to_string()
+    assert excinfo.value.message == 'Please provide a correct data structure.'
+
+
+def test__to_string_dict():
+    """Test the _to_string with a dict.
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/opeam")
+    data = am._to_string(data={"sunOrganizationStatus": "Inactive"})
+    assert data == '{"sunOrganizationStatus": "Inactive"}'
+
+
+def test__to_string_list():
+    """Test the _to_string with a list
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/opeam")
+    data = am._to_string(data=['my', 'list'])
+    assert data == 'my list'
+
+
+def test__to_string_string():
+    """Test the _to_string with a string
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/opeam")
+    data = am._to_string(data='my list')
+    assert data == 'my list'
 
 
 def test_authenticate():
@@ -342,7 +387,14 @@ def test_list_identities():
     my_data = am.list_identities()
     am.logout()
 
-    assert (my_data['result'][0]['username']) == 'bjensen'
+    # OpenAM 13
+    if 'username' in my_data['result'][0]:
+        username = my_data['result'][0]['username']
+    else:
+        # OpenAM 12
+        username = my_data['result'][0]
+
+    assert username == "bjensen"
 
 
 def test_list_identities_user_demo():
@@ -354,7 +406,14 @@ def test_list_identities_user_demo():
     my_data = am.list_identities(query="demo")
     am.logout()
 
-    assert (my_data['result'][0]['username']) == 'demo'
+    # OpenAM 13
+    if 'username' in my_data['result'][0]:
+        username = my_data['result'][0]['username']
+    else:
+        # OpenAM 12
+        username = my_data['result'][0]
+
+    assert username == "demo"
 
 
 def test_list_identities_user_demo_wrong_type():
@@ -366,7 +425,14 @@ def test_list_identities_user_demo_wrong_type():
     my_data = am.list_identities(query="demo", type="wrong")
     am.logout()
 
-    assert (my_data['result'][0]['username']) == 'demo'
+    # OpenAM 13
+    if 'username' in my_data['result'][0]:
+        username = my_data['result'][0]['username']
+    else:
+        # OpenAM 12
+        username = my_data['result'][0]
+
+    assert username == "demo"
 
 
 def test_get_identity_no_username():
@@ -663,6 +729,7 @@ def test_delete_realm():
 
     assert data['success']
 
+
 def test_delete_realm_no_realm():
     """ Will delete an identity when no realm is provided.
     :return:
@@ -672,3 +739,188 @@ def test_delete_realm_no_realm():
         am.authenticate(username="amadmin", password="password_openam")
         am.delete_realm()
     assert excinfo.value.message == 'Please provide a realm.'
+
+
+def test_list_resourcetypes(openam_version):
+    if openam_version != 12:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        data = am.list_resourcetypes()
+        am.logout()
+
+        assert data['result'][0]['name'] == 'Delegation Service'
+    else:
+        pass
+
+
+def test_list_resourcetypes_wrong_query(openam_version):
+    if openam_version != 12:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        data = am.list_resourcetypes(query="wrong")
+        am.logout()
+
+        assert not data
+    else:
+        pass
+
+
+def test_get_resourcetypes_no_uuid():
+    """ Will delete an identity when no realm is provided.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        am.get_resourcetype()
+    assert excinfo.value.message == 'Please provide a uuid for a resourcetype.'
+
+
+def test_get_resourcetypes(openam_version):
+    """Get an resourcetype.
+    :return:
+    """
+    if openam_version != 12:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        data = am.list_resourcetypes()
+        data = am.get_resourcetype(uuid=data['result'][0]['uuid'])
+        am.logout()
+
+        assert data['name'] == 'Delegation Service'
+    else:
+        pass
+
+
+def test_get_resourcetypes_wrong_uuid(openam_version):
+    """Get a resourcetype when wrong uuid is given.
+    :return:
+    """
+    if openam_version != 12:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        data = am.get_resourcetype(uuid="wrong")
+        am.logout()
+
+        assert not data
+    else:
+        pass
+
+
+def test_create_resourcetype(openam_version):
+    """Create a resourcetype.
+    :return:
+    """
+    if openam_version != 12:
+        create_resourcetype = {
+            "name": "My Resource Type",
+            "actions": {
+                "LEFT": "true",
+                "RIGHT": "true",
+                "UP": "true",
+                "DOWN": "true"
+            },
+            "patterns": [
+                "http://device/location/*"
+            ]
+        }
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        data = am.create_resourcetype(resource_data=create_resourcetype)
+        am.logout()
+
+        assert data['name'] == 'My Resource Type'
+    else:
+        pass
+
+
+def test_create_resourcetypes_no_resource_data():
+    """ Will create an resourcetype when no resource_data is provided.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        am.create_resourcetype()
+    assert excinfo.value.message == 'Please provide correct resource_data information.'
+
+
+def test_update_resourcetype(openam_version):
+    """Update a resourcetype.
+    :return:
+    """
+    if openam_version != 12:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        for result in am.list_resourcetypes()['result']:
+            if result['name'] == 'My Resource Type':
+                uuid = result['uuid']
+
+        resource_data = {
+            "uuid": uuid,
+            "name": "My Updated Resource Type",
+            "actions": {
+                "LEFT": "false",
+                "RIGHT": "false",
+                "UP": "false",
+                "DOWN": "false"
+            },
+            "patterns": [
+                "http://device/location/*"
+            ]
+        }
+
+        data = am.update_resourcetype(uuid=uuid, resource_data=resource_data)
+        assert data['name'] == 'My Updated Resource Type'
+    else:
+        pass
+
+
+def test_update_resourcetypes_no_resource_data():
+    """ Will create an resourcetype when no resource_data is provided.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        am.update_resourcetype(uuid="asas")
+    assert excinfo.value.message == 'Please provide correct resource_data information.'
+
+
+def test_update_resourcetypes_no_uuid():
+    """ Will create an resourcetype when no resource_data is provided.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        am.update_resourcetype(resource_data={})
+    assert excinfo.value.message == 'Please provide a uuid for a resourcetype.'
+
+
+def test_delete_resourcetype(openam_version):
+    """Will delete an resourcetype.
+    :return:
+    """
+    if openam_version != 12:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        for result in am.list_resourcetypes()['result']:
+            if result['name'] == 'My Updated Resource Type':
+                uuid = result['uuid']
+        data = am.delete_resourcetype(uuid=uuid)
+
+        assert data == {}
+    else:
+        pass
+
+
+def test_delete_resourcetypes_no_uuid():
+    """ Will delete an resourcetype when no uuid is provided.
+    :return:
+    """
+    with pytest.raises(ValueError) as excinfo:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        am.delete_resourcetype()
+    assert excinfo.value.message == 'Please provide a uuid for a resourcetype.'
