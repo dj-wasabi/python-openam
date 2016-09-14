@@ -10,6 +10,9 @@ import ast
 
 here = os.path.abspath(os.path.dirname(__file__))
 
+with open('README.rst') as file:
+    long_description = file.read()
+
 
 def get_info(filename):
     info = {}
@@ -88,6 +91,7 @@ class Coverage(Command):
         proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
         proc.wait()
 
+
 setup(name='python-openam',
       version=info.get('__version__', '0.0.0'),
       description='Managing OpenAM via rest API',
@@ -98,6 +102,7 @@ setup(name='python-openam',
       author_email=info.get('__email__', 'me@home.nl'),
       license=info.get('__license__', '0.0.0'),
       packages=['openam'],
+      long_description=long_description,
       install_requires = [
         'requests'
       ],
