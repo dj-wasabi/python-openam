@@ -3,7 +3,7 @@ import requests
 import json
 
 __author__ = 'Werner Dijkerman'
-__version__ = '0.0.2'
+__version__ = '0.0.2a'
 __license__ = "Apache License 2.0"
 __email__ = "ikben@werner-dijkerman.nl"
 
