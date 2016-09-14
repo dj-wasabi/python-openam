@@ -120,13 +120,15 @@ class Openam(object):
             data = {'error': e}
         return data
 
-    def _uri_realm_creator(self, realm=None, uri=None):
+    def _uri_realm_creator(self, realm=None, uri=None, arguments=None):
         """Creating the uri if there is a realm provided.
 
         :param realm: The name of the realm
         :type realm: str
         :param uri: The uri after the 'realm' part.
         :type uri: str
+        :param arguments: If some arguments needs to be appended to the uri.
+        :type arguments: str
         :rtype: str
         :return: Returns a uri with or without the realm.
         """
@@ -134,6 +136,9 @@ class Openam(object):
             uri = 'json/' + realm + '/' + uri
         else:
             uri = 'json/' + uri
+
+        if arguments is not None:
+            uri = uri + arguments
 
         return uri
 
@@ -150,6 +155,13 @@ class Openam(object):
         return type
 
     def _to_string(self, data=None):
+        """Converts a dict or a list to a string. List will be space seperated.
+
+        :param data: A data set
+        :type data: dict or list
+        :rtype: str
+        :return: The data changed to string
+        """
         if not data:
             raise ValueError("Please provide a correct data structure.")
 
@@ -160,7 +172,7 @@ class Openam(object):
         else:
             return data
 
-    def authenticate(self, realm=None, username=None, password=None):
+    def authenticate(self, realm=None, username=None, password=None, login_params=None):
         """Will authenticate the configured user on OpenAM.
 
         When successful, a http header is added to the current headers with the the value of the 'cookiename'
@@ -172,6 +184,9 @@ class Openam(object):
         :type username: str
         :param password: The password for the user configured on 'username'
         :type password: str
+        :param login_params: Extra arguments that are appended to the authenticate uri. Can be used for authenticating
+        against a module or specific chain. Example: ?authIndexType=module&authIndexValue=myLdapModule
+        :type login_params: str
         :rtype: dict
         :return: A dict with the keys 'succesUrl' and 'tokenId'.
         :Example:
@@ -188,13 +203,14 @@ class Openam(object):
             raise ValueError("You will need to provide a password to login.")
 
         post_data = '{}'
-        headers = self.headers
+        self.realm = realm
         cookiename = self.cookiename
-        headers['X-OpenAM-Username'] = username
-        headers['X-OpenAM-Password'] = password
-        uri = self._uri_realm_creator(realm=realm, uri="authenticate")
+        login_headers = self.headers
+        login_headers['X-OpenAM-Username'] = username
+        login_headers['X-OpenAM-Password'] = password
+        uri = self._uri_realm_creator(realm=realm, uri="authenticate", arguments=login_params)
 
-        data = self._post(uri=uri, data=post_data, headers=headers)
+        data = self._post(uri=uri, data=post_data, headers=login_headers)
         if data.status_code == 200:
             json_data = data.json()
             self.headers[cookiename] = json_data['tokenId']
@@ -202,11 +218,9 @@ class Openam(object):
         else:
             return False
 
-    def logout(self, realm=None):
+    def logout(self):
         """Will logout the current user from OpenAM.
 
-        :param realm: The name of the realm.
-        :type realm: str
         :rtype: bool
         :return: True if logout was successful, False when won't.
         :Example:
@@ -216,8 +230,9 @@ class Openam(object):
             >>> am.logout()
             True
         """
-        uri = self._uri_realm_creator(realm=realm, uri="sessions/?_action=logout")
-        data = self._post(uri=uri, headers=self.headers)
+        post_data = '{}'
+        uri = self._uri_realm_creator(realm=self.realm, uri="sessions/?_action=logout")
+        data = self._post(uri=uri, data=post_data, headers=self.headers)
         if data.status_code == 200:
             return True
         else:
@@ -788,4 +803,3 @@ class Openam(object):
         uri = self._uri_realm_creator(realm=realm, uri='resourcetypes/' + uuid)
         data = self._delete(uri=uri, headers=self.headers)
         return data.json()
-

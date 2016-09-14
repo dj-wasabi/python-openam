@@ -12,6 +12,7 @@ addons:
 before_install:
 - sudo apt-get -qq update
 - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
+- pip install pytest-cov coverage-badge pep8 pep257
 
 before_script:
 - python setup.py pep
