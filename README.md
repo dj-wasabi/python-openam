@@ -35,10 +35,10 @@ The following (json/) endpoints work:
 | /agents            |:white_check_mark:|:white_check_mark:|
 | /realms            |:white_check_mark:|:white_check_mark:|
 | /dashboard         |     :x:          |      :x:         |
-| /sessions          |     :x:          |      :x:         |
+| /sessions          |:white_check_mark:|:white_check_mark:|
 | /serverinfo/*      |:white_check_mark:|:white_check_mark:|
 | /applications      |     :x:          |      :x:         |
-| /resourcetypes     |     :x:          |      :x:         |
+| /resourcetypes     |                  |:white_check_mark:|
 | /policies          |     :x:          |      :x:         |
 | /applicationtypes  |     :x:          |      :x:         |
 | /conditiontypes    |     :x:          |      :x:         |
