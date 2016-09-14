@@ -99,11 +99,7 @@ setup(name='python-openam',
       license=info.get('__license__', '0.0.0'),
       packages=['openam'],
       install_requires = [
-        'requests',
-        'pytest-cov',
-        'coverage-badge',
-        'pep8',
-        'pep257'
+        'requests'
       ],
       tests_require=['pytest'],
       cmdclass={
