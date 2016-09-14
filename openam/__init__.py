@@ -127,6 +127,8 @@ class Openam(object):
         :type realm: str
         :param uri: The uri after the 'realm' part.
         :type uri: str
+        :param arguments: If some arguments needs to be appended to the uri.
+        :type arguments: str
         :rtype: str
         :return: Returns a uri with or without the realm.
         """

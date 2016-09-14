@@ -108,6 +108,15 @@ def test__uri_realm_creator_test_realm():
     assert data == 'json/test/wrong_uri'
 
 
+def test__uri_realm_creator_arguments():
+    """
+    :return:
+    """
+    am = openam.Openam(openam_url="http://openam.example.com:8080/opeam")
+    data = am._uri_realm_creator(realm="test", uri='authenticate', arguments='?test')
+    assert data == 'json/test/authenticate?test'
+
+
 def test__type_validator():
     """
     :return:
@@ -220,15 +229,6 @@ def test_logout():
     am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
     am.authenticate(username="amadmin", password="password_openam")
     assert am.logout()
-
-
-def test_logout_realm_wrong():
-    """Test if a user can logout with a wrong realm.
-    :return:
-    """
-    am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
-    am.authenticate(username="amadmin", password="password_openam")
-    assert not am.logout(realm="wrong")
 
 
 def test_get_serverinfo():
