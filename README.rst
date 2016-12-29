@@ -85,7 +85,7 @@ The following (xacml/) endpoints work:
 +--------------------+------------+-----------+
 | endpoint           | OpenAM 12  | OpenAM 13 |
 +====================+============+===========+
-| /policies          |  .         |    .      |
+| /policies          |  V         |    V      |
 +--------------------+------------+-----------+
 
 The following (frrest/) endpoints work:
