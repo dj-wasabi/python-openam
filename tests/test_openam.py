@@ -924,3 +924,19 @@ def test_delete_resourcetypes_no_uuid():
         am.authenticate(username="amadmin", password="password_openam")
         am.delete_resourcetype()
     assert excinfo.value.message == 'Please provide a uuid for a resourcetype.'
+
+
+def test_export_xacml_policies(openam_version):
+    """Will export all available xacml policies.
+    :return:
+    """
+    if openam_version == 12:
+        am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
+        am.authenticate(username="amadmin", password="password_openam")
+        data = am.xacml_export_policies()
+
+        assert data.split('\n')[0] == '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    else:
+        pass
+
+

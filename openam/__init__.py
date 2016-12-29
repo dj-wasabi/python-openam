@@ -120,9 +120,11 @@ class Openam(object):
             data = {'error': e}
         return data
 
-    def _uri_realm_creator(self, realm=None, uri=None, arguments=None):
+    def _uri_realm_creator(self, endpoint="json", realm=None, uri=None, arguments=None):
         """Creating the uri if there is a realm provided.
 
+        :param endpoint: The endpoint to be used. Default set to 'json'. Other examples can be: 'xacml' and 'frrest'
+        :type endpoint: str
         :param realm: The name of the realm
         :type realm: str
         :param uri: The uri after the 'realm' part.
@@ -133,12 +135,12 @@ class Openam(object):
         :return: Returns a uri with or without the realm.
         """
         if realm is not None:
-            uri = 'json/' + realm + '/' + uri
+            uri = endpoint + '/' + realm + '/' + uri
         else:
-            uri = 'json/' + uri
+            uri = endpoint + '/' + uri
 
         if arguments is not None:
-            uri = uri + arguments
+            uri += arguments
 
         return uri
 
@@ -184,8 +186,7 @@ class Openam(object):
         :type username: str
         :param password: The password for the user configured on 'username'
         :type password: str
-        :param login_params: Extra arguments that are appended to the authenticate uri. Can be used for authenticating
-        against a module or specific chain. Example: ?authIndexType=module&authIndexValue=myLdapModule
+        :param login_params: Extra arguments that are appended to the authenticate uri. Can be used for authenticating against a module or specific chain. Example: ?authIndexType=module&authIndexValue=myLdapModule
         :type login_params: str
         :rtype: dict
         :return: A dict with the keys 'succesUrl' and 'tokenId'.
@@ -803,3 +804,38 @@ class Openam(object):
         uri = self._uri_realm_creator(realm=realm, uri='resourcetypes/' + uuid)
         data = self._delete(uri=uri, headers=self.headers)
         return data.json()
+
+    def xacml_export_policies(self, realm=None, query=None):
+        """
+
+        :param realm:
+        :param query:
+        :return:
+        """
+        uri = self._uri_realm_creator(realm=realm, endpoint="xacml", uri="policies")
+        data = self._get(uri=uri, headers=self.headers)
+        if data.status_code == 200:
+            return data.text
+        else:
+            return False
+
+    def xacml_import_policy(self, realm=None, policy_data=None, dryrun=None):
+        """
+
+        :param realm:
+        :param policy_data:
+        :param dryrun:
+        :return:
+        """
+        headers = {}
+        cookiename = self.cookiename
+        headers['Content-Type'] = 'application/xml'
+        headers[cookiename] = self.headers[cookiename]
+        uri = self._uri_realm_creator(realm=realm, endpoint="xacml", uri="policies")
+
+        if dryrun:
+            uri += '?dryrun=true'
+
+        data = self._post(uri=uri, data=policy_data, headers=headers)
+        return data.json()
+
