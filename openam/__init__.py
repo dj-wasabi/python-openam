@@ -341,9 +341,9 @@ class Openam(object):
             >>> am = openam.Openam(openam_url="http://openam.example.com:8080/openam/")
             >>> auth_data = am.authenticate(username="amadmin", password="password_openam")
             >>> user_data = {"username": "bjensen", "userpassword": "secret12", "mail": "bjensen@example.com"}
-            >>> am.create_identity(user=user_data)
+            >>> am.create_identity(user_data=user_data)
             {u'username': u'bjensen', u'dn': [u'uid=bjensen,ou=people,dc=openam,dc=forgerock,dc=org'], u'realm': u'/'..}
-            >>> am.create_identity(user=user_data)
+            >>> am.create_identity(user_data=user_data)
             {u'reason': u'Conflict', u'code': 409, u'message': u'Resource already exists'}
             >>> am.logout()
         """
