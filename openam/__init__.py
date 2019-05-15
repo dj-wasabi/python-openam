@@ -11,7 +11,7 @@ __email__ = "ikben@werner-dijkerman.nl"
 class Openam(object):
     """OpenAM Rest Interface."""
 
-    def __init__(self, openam_url='', resource=1.0, protocol=1.0, timeout=10, cookiename="iplanetDirectoryPro"):
+    def __init__(self, openam_url='', resource=1.0, protocol=1.0, timeout=10, cookiename="iplanetDirectoryPro", verify=True):
         """Will initialize the openam module.
 
         :param openam_url: The complete URL to the OpenAM server.
@@ -24,6 +24,8 @@ class Openam(object):
         :type timeout: int
         :param cookiename: The name of the cookie.
         :type cookiename: str
+        :param verify: Allow OpenAM server using a self-signed certificate.
+        :type verify: bool
         """
         if not openam_url:
             raise ValueError('This interface needs an OpenAM URL to work!')
@@ -36,6 +38,7 @@ class Openam(object):
         self.headers['Content-Type'] = 'application/json'
         self.headers[cookiename] = None
         self.timeout = int(timeout)
+        self.verify = verify
 
     def _get(self, uri, headers=None):
         """Will do an 'GET' request to get information via the API.
@@ -51,7 +54,7 @@ class Openam(object):
         else:
             openam_path = self.openam_url + "/" + uri
 
-        return requests.get(openam_path, headers=headers, timeout=self.timeout)
+        return requests.get(openam_path, headers=headers, timeout=self.timeout, verify=self.verify)
 
     def _post(self, uri, data=None, headers=None):
         """Post information via the API.
@@ -71,7 +74,7 @@ class Openam(object):
             openam_path = self.openam_url + "/" + uri
 
         try:
-            data = requests.post(openam_path, headers=headers, data=data, timeout=self.timeout)
+            data = requests.post(openam_path, headers=headers, data=data, timeout=self.timeout, verify=self.verify)
         except requests.exceptions.RequestException as e:
             data = {'error': e}
         return data
@@ -94,7 +97,7 @@ class Openam(object):
             openam_path = self.openam_url + "/" + uri
 
         try:
-            data = requests.put(openam_path, headers=headers, data=data, timeout=self.timeout)
+            data = requests.put(openam_path, headers=headers, data=data, timeout=self.timeout, verify=self.verify)
         except requests.exceptions.RequestException as e:
             data = {'error': e}
         return data
@@ -115,7 +118,7 @@ class Openam(object):
             openam_path = self.openam_url + "/" + uri
 
         try:
-            data = requests.delete(openam_path, headers=headers, timeout=self.timeout)
+            data = requests.delete(openam_path, headers=headers, timeout=self.timeout, verify=self.verify)
         except requests.exceptions.RequestException as e:
             data = {'error': e}
         return data
